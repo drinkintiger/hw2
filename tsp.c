@@ -21,5 +21,6 @@ int main(int argc, char * argv[]) {
         sscanf(line, "%s", &line);
         printf("%s", line);
     }
+    fclose(file);
     return 0;
 }
