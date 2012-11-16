@@ -9,10 +9,17 @@
  
 #include <stdio.h>
 #include <stdlib.h>
-#include <pthread.h>
+#include <omp.h>
+
+FILE *file;
 
 int main(int argc, char * argv[]) {
-
-    File *file = fopen(
-
+    char line[64];
+    file = fopen( argv[1], "rt");
+    
+    while(fgets(line, 64, file) != NULL) {
+        sscanf(line, "%s", &line);
+        printf("%s", line);
+    }
+    return 0;
 }
