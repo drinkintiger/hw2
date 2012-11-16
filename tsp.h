@@ -9,7 +9,6 @@ typedef struct {
 } tour;
 
 typedef struct {
-    int cost;
     int myCity;
     struct node *children;
 } node;
