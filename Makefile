@@ -9,10 +9,13 @@ CC=gcc
 CFLAGS=-g -Wall
 LDFLAGS=-fopenmp
 
-all: tsp
+all: tsp stack
 
-tsp: tsp.c
-	$(CC) -o tsp $(CFLAGS) $(LDFLAGS) tsp.c
+tsp: stack tsp.c tsp.h
+	$(CC) -o tsp stack.o $(CFLAGS) $(LDFLAGS) tsp.c
+
+stack: stack.c tsp.h
+	$(CC) -c -o stack.o $(CFLAGS) stack.c
 
 clean:
 	$(RM) tsp *.o
