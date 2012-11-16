@@ -1,7 +1,12 @@
+/*
+ * Jordan Harmel
+ * Vladimir Tsoy
+ * Nov. 15, 2012
+ *
+ * CS 470 : Traveling Salesperson
+ *
+ */
 #include "stack.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <omp.h>
 
 typedef struct {
     int *path;
