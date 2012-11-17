@@ -14,3 +14,9 @@ typedef struct {
     int cost;
     int count;
 } tour;
+
+struct Edge {
+    int cost;
+    int city;
+    struct Edge *next;
+};
