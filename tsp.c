@@ -12,7 +12,7 @@
 FILE *file;
 
 int tour_finder(void);
-int feasible(tour curr_tour, struct Edge next, int city);
+int feasible(tour *curr_tour, struct Edge next, int city);
 int tokenize_line(char *input);
 static int num_cities = 0;
 void partition_tree(int rank, struct Stack s);
@@ -30,7 +30,7 @@ int main(int argc, char * argv[]) {
     fclose(file);
     
     //after list is built
-    #pragma omp parallel num_threads(4)
+    #pragma omp parallel num_threads(num_cities)
     {
     tour_finder();
     }
@@ -40,7 +40,6 @@ int main(int argc, char * argv[]) {
 
 int tour_finder(void) {
     int my_rank = omp_get_thread_num();
-    int thread_count = omp_get_num_threads();
     struct Stack *my_stack = createStack();
     tour *curr_tour = (tour*)malloc(sizeof(tour));
     curr_tour->cost = 0;
@@ -74,7 +73,7 @@ int tour_finder(void) {
     return 0;
 }
 
-int feasible(tour curr_tour, struct Edge next, int city) {
+int feasible(tour *curr_tour, struct Edge next, int city) {
     if(curr_tour->count == num_cities){
         //if there is an edge that points to 0 add 0, and the cost to get
         //to it and return true
