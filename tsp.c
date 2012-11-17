@@ -12,7 +12,7 @@
 FILE *file;
 
 int tour_finder(void);
-int feasible(tour curr_tour, int city);
+int feasible(tour curr_tour, struct Edge next, int city);
 int tokenize_line(char *input);
 static int num_cities = 0;
 void partition_tree(int rank, struct Stack s);
@@ -61,7 +61,7 @@ int tour_finder(void) {
         }
         else {
             for(city = n-1; city >= 1; city--){
-                if(feasible(curr_tour, city)){
+                if(feasible(curr_tour, Edge from city, int city)){
                     add_city(curr_tour, city);
                     push(my_stack, curr_tour);
                     remove_last_city(curr_tour);
@@ -74,8 +74,19 @@ int tour_finder(void) {
     return 0;
 }
 
-int feasible(tour curr_tour, int city) {
+int feasible(tour curr_tour, struct Edge next, int city) {
+    if(curr_tour->count == num_cities){
+        //if there is an edge that points to 0 add 0, and the cost to get
+        //to it and return true
+        //otherwise return false
+    }
+    //else if(are there duplicates)
+        //if yes, return false
+    //else return true
     return 0;
+}
+void add_city(tour curr_tour, int city){
+
 }
 int tokenize_line(char *input) {
     char *temp = (char *)malloc(sizeof(input)+1);

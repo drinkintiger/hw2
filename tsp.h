@@ -7,10 +7,9 @@
  *
  */
 #include "stack.h"
-#include "list.h"
 
 typedef struct {
-    struct Node *path;
+    int *path;
     int cost;
     int count;
 } tour;
