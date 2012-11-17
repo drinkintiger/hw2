@@ -20,4 +20,6 @@ void destroyStack(struct Stack *s);
 
 void push(struct Stack *s, void *d);
 
-void *popBusyWait(struct Stack *s) ;
+void *popBusyWait(struct Stack *s);
+
+int empty(struct Stack *s);
