@@ -7,7 +7,7 @@
  *
  */
 #include "stack.h"
-#include <string.h>
+#include "list.h"
 
 typedef struct {
     struct node *path;
