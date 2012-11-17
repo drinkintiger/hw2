@@ -7,13 +7,10 @@
  *
  */
 #include "stack.h"
-#include "string.h"
+#include <string.h>
 
 typedef struct {
     struct node *path;
     int cost;
+    int count;
 } tour;
-
-typedef struct {
-    struct node *children;
-} tsp_tree;
