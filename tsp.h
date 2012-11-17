@@ -10,7 +10,7 @@
 #include "list.h"
 
 typedef struct {
-    struct node *path;
+    struct Node *path;
     int cost;
     int count;
 } tour;
