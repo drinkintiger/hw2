@@ -15,7 +15,7 @@ typedef struct {
 } tour;
 
 struct Edge {
-    int cost;
     int city;
+    int cost;
     struct Edge *next;
 };
