@@ -7,7 +7,6 @@
  *
  */
 #include "stack.h"
-#include "list.h"
 
 typedef struct {
     int *path;
