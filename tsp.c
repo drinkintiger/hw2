@@ -23,7 +23,7 @@ int main(int argc, char * argv[]) {
     
     while(fgets(line, 64, file) != NULL) {
         sscanf(line, "%s", &line);
-        printf("%s", line);
+        printf("%s\n", line);
     }
     fclose(file);
     
@@ -40,13 +40,16 @@ int tour_finder(void) {
     int my_rank = omp_get_thread_num();
     int thread_count = omp_get_num_threads();
     struct Stack *my_stack = createStack();
-    tour *curr_tour;
+    tour *curr_tour = (tour*)malloc(sizeof(tour));
     curr_tour->cost = 0;
     curr_tour->count = 1;
     curr_tour->path = NULL;
-    printf("hello %d of %d", my_rank, thread_count);
-    /*
     
+    //print debugging stuff
+    push(my_stack, (void *)my_rank);
+    int d = (int*)popBusyWait(my_stack);
+    printf("%d\n", d);
+    /*    
     push(my_stack, 0);
     
     while(!empty(my_stack)) {
@@ -65,9 +68,6 @@ int tour_finder(void) {
         free_tour(curr_tour);
         }
     }*/
-    
-    return 0;
-    
     
     return 0;
 }
