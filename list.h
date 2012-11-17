@@ -6,17 +6,19 @@
  * CS 470 : Traveling Salesperson
  *
  */
+#include <stdio.h>
+#include <stdlib.h>
 
-typedef struct {
+struct city_node {
     int myCity;
-    struct city_node *children;
+    int cost;
+    struct city_node *Next;
 } Head;
 
-typedef struct {
-    struct Node *head;
-}List;
+struct List{
+    struct city_node *Head;
+};
 
 struct List *createList();
 
-void insert_front(int d);
-void remove(int d);
+void insert_front(int d, int cost,struct List *theList);

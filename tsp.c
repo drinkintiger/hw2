@@ -41,6 +41,8 @@ int tour_finder(void) {
     printf("hello %d of %d", my_rank, thread_count);
     return 0;
     
+    
+    return 0;
 }
 
 int feasible(struct tour curr_tour, int city) {
