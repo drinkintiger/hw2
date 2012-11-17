@@ -10,13 +10,13 @@
 #include "list.h"
 
 typedef struct {
-    struct Node *path;
+    int *path;
     int cost;
     int count;
 } tour;
 
 struct Edge {
-    int cost;
     int city;
+    int cost;
     struct Edge *next;
 };
