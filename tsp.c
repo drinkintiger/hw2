@@ -15,7 +15,7 @@ int tour_finder(void);
 int feasible(tour curr_tour, int city);
 int tokenize_line(char *input);
 static int num_cities = 0;
-void partition_tree(int rank, struct Stack s);
+struct Edge **edges_list;
 
 int main(int argc, char * argv[]) {
     tour best_tour;
@@ -25,10 +25,13 @@ int main(int argc, char * argv[]) {
     while(fgets(line, 64, file) != NULL) {
         sscanf(line, "%s", &line);
         tokenize_line(line);
-       printf("%s\n", line);
     }
+        for (int i = 0; i < num_cities; ++i){
+            for (int j = 0; j < 3; ++j){
+                printf("%d %d %d asd\n", i, (&edges_list[i][j])->city, ((&edges_list[i][j])->next)->city);
+            }
+        }
     fclose(file);
-    
     //after list is built
     #pragma omp parallel num_threads(4)
     {
@@ -78,16 +81,27 @@ int feasible(tour curr_tour, int city) {
     return 0;
 }
 int tokenize_line(char *input) {
-    char *temp = (char *)malloc(sizeof(input)+1);
-    char *str_ptr = NULL;
+    char *delims = "( ,\r\n)";
     
     if (atoi(input) > 0) {
         num_cities = atoi(input);
+        if ( num_cities > 0) {
+            edges_list = (struct Edge **)malloc(sizeof(struct Edge*) * num_cities );
+            for (int i = 0; i < num_cities; ++i) {
+                //edges_list[i]->next = NULL;
+            }
+        }
         return 1;
     }
     else {
-        temp = strncpy (temp, &input[1], strlen(input) - 2);
-        printf ("%s\n",temp);
+        int city_origin = atoi(strtok(input,delims));
+        int city_dest = atoi(strtok(NULL, delims));
+        int cost = atoi(strtok(NULL, delims));
+        struct Edge *temp = (struct Edge *)malloc(sizeof(struct Edge));
+        temp->city = city_dest;
+        temp->cost = cost;
+        temp->next = edges_list[city_origin];
+        edges_list[city_origin] = temp;
         }
     return 0;
 }
