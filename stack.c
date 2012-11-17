@@ -1,4 +1,12 @@
-
+/*
+ * Jordan Harmel
+ * Vladimir Tsoy
+ * Nov. 15, 2012
+ *
+ * CS 470 : Traveling Salesperson
+ * Stack implementation
+ */
+ 
 #include "stack.h"
 
 struct Stack *createStack() {
