@@ -53,3 +53,8 @@ void *popBusyWait(struct Stack *s) {
     free(temp);
     return d;
 }
+
+int empty(struct Stack *s) {
+    if(s->top == NULL) return 1;
+    else return 0;
+}

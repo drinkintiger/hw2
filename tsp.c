@@ -15,6 +15,7 @@ int tour_finder(void);
 int feasible(tour curr_tour, int city);
 int tokenize_line(char *input);
 static int num_cities = 0;
+void partition_tree(int rank, struct Stack s);
 
 int main(int argc, char * argv[]) {
     tour best_tour;
@@ -24,7 +25,7 @@ int main(int argc, char * argv[]) {
     while(fgets(line, 64, file) != NULL) {
         sscanf(line, "%s", &line);
         tokenize_line(line);
-        printf("%s\n", line);
+       printf("%s\n", line);
     }
     fclose(file);
     
@@ -40,9 +41,35 @@ int main(int argc, char * argv[]) {
 int tour_finder(void) {
     int my_rank = omp_get_thread_num();
     int thread_count = omp_get_num_threads();
-    printf("hello %d of %d", my_rank, thread_count);
-    return 0;
+    struct Stack *my_stack = createStack();
+    tour *curr_tour = (tour*)malloc(sizeof(tour));
+    curr_tour->cost = 0;
+    curr_tour->count = 1;
+    curr_tour->path = NULL;
     
+    //print debugging stuff
+    push(my_stack, (void *)my_rank);
+    int d = (int*)popBusyWait(my_stack);
+    printf("%d\n", d);
+    /*    
+    push(my_stack, 0);
+    
+    while(!empty(my_stack)) {
+        cur_tour = pop(my_stack);
+        if(city_count(curr_tour) == n) {
+            if(best_tour(curr_tour)) update_best_tour(curr_tour);
+        }
+        else {
+            for(city = n-1; city >= 1; city--){
+                if(feasible(curr_tour, city)){
+                    add_city(curr_tour, city);
+                    push(my_stack, curr_tour);
+                    remove_last_city(curr_tour);
+                }
+            }
+        free_tour(curr_tour);
+        }
+    }*/
     
     return 0;
 }
