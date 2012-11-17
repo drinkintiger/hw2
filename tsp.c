@@ -86,12 +86,8 @@ int tokenize_line(char *input) {
         return 1;
     }
     else {
-        for (int i = 0; i < strlen(input); ++i) {
-            if ( '(' != input[i] && ')' != input[i] ){
-                temp = strdup(&input[i]);
-            }
+        temp = strncpy (temp, &input[1], strlen(input) - 2);
+        printf ("%s\n",temp);
         }
-        printf("%s asdasdada \n", temp);
-    }
     return 0;
 }
