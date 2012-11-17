@@ -7,11 +7,12 @@
  *
  */
  
-#include "stack.h"
+#include "tsp.h"
 
 FILE *file;
 
 int main(int argc, char * argv[]) {
+    tour best_tour;
     char line[64];
     file = fopen( argv[1], "rt");
     
@@ -21,4 +22,8 @@ int main(int argc, char * argv[]) {
     }
     fclose(file);
     return 0;
+}
+
+int tokenize_line(char *input) {
+    
 }
