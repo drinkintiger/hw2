@@ -19,6 +19,7 @@ struct Edge **edges_list;
 
 int main(int argc, char * argv[]) {
     tour best_tour;
+    struct Stack *stack = createStack();
     char line[64];
     file = fopen( argv[1], "rt");
     
@@ -37,7 +38,21 @@ int main(int argc, char * argv[]) {
         for (int i = 0; i < num_cities; ++i) {
             while(edges_list[i]->next!=NULL) {
                 printf("i: %d City: %d Cost: %d\n", i, edges_list[i]->city, edges_list[i]->cost);
-                edges_list[i]->next = edges_list[i]->next->next;
+                edges_list[i] = edges_list[i]->next;
+            }
+        }
+        int stack_size = 0;
+        for (int i = 0; stack_size < num_cities; i++) {
+            while(edges_list[i]->next!=NULL) {
+                stack_size++;
+                tour *t = (tour *)malloc(sizeof(tour));
+                t->cost = edges_list[i]->cost;
+                t->count++;
+                t->last_city = edges_list[i]->city;
+                t->path= (int *)malloc(sizeof(int)*(num_cities+1));
+                t->path[edges_list[i]->city] = edges_list[i]->city;
+                push(stack, (void *)t);
+                edges_list[i] = edges_list[i]->next;
             }
         }
     fclose(file);
