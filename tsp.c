@@ -27,8 +27,11 @@ int main(int argc, char * argv[]) {
         tokenize_line(line);
     }
         for (int i = 0; i < num_cities; ++i){
-            for (int j = 0; j < 3; ++j){
-                printf("%d %d %d asd\n", i, (&edges_list[i][j])->city, ((&edges_list[i][j])->next)->city);
+            for (int j = 0; j < 2; ++j){
+            if ((&edges_list[i][j])->city != NULL){
+                printf("%d %d asd\n", i, (&edges_list[i][j])->city);
+            }
+            else printf("BLAH\n");
             }
         }
     fclose(file);
@@ -52,7 +55,7 @@ int tour_finder(void) {
     //print debugging stuff
     push(my_stack, (void *)my_rank);
     int d = (int*)popBusyWait(my_stack);
-    printf("%d\n", d);
+    //printf("%d\n", d);
     /*    
     push(my_stack, 0);
     
@@ -97,9 +100,10 @@ int tokenize_line(char *input) {
         num_cities = atoi(input);
         if ( num_cities > 0) {
             edges_list = (struct Edge **)malloc(sizeof(struct Edge*) * num_cities );
-            for (int i = 0; i < num_cities; ++i) {
-                //edges_list[i]->next = NULL;
-            }
+            /*for (int i = 0; i < num_cities; ++i) {
+                edges_list[i] = (struct Edge *)malloc(sizeof(struct Edge));
+                edges_list[i]->next = NULL;
+            }*/
         }
         return 1;
     }
