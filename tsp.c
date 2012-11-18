@@ -50,22 +50,19 @@ int tour_finder(void) {
     tour *curr_tour = (tour*)malloc(sizeof(tour));
     curr_tour->cost = 0;
     curr_tour->count = 1;
-    curr_tour->path = NULL;
-    
+    curr_tour->path = (int *)malloc(sizeof(int)*(num_cities+1));
+    curr_tour->path[0] = 0;
     //print debugging stuff
-    push(my_stack, (void *)my_rank);
-    int d = (int*)popBusyWait(my_stack);
-    //printf("%d\n", d);
-    /*    
-    push(my_stack, 0);
+    push(my_stack, (void *)curr_tour);
+    tour *d = (int*)popBusyWait(my_stack);
     
-    while(!empty(my_stack)) {
-        cur_tour = pop(my_stack);
-        if(city_count(curr_tour) == n) {
+    /*while(!empty(my_stack)) {
+        curr_tour = pop(my_stack);
+        if(curr_tour->count == num_cities) {
             if(best_tour(curr_tour)) update_best_tour(curr_tour);
         }
         else {
-            for(city = n-1; city >= 1; city--){
+            for(city = num_cities-1; city >= 1; city--){
                 if(feasible(curr_tour, Edge from city, int city)){
                     add_city(curr_tour, city);
                     push(my_stack, curr_tour);
@@ -90,8 +87,9 @@ int feasible(tour *curr_tour, struct Edge next, int city) {
     //else return true
     return 0;
 }
-void add_city(tour curr_tour, int city){
-
+void add_city(tour *curr_tour, int city){
+    curr_tour->path[city] = city;
+    
 }
 int tokenize_line(char *input) {
     char *delims = "( ,\r\n)";
