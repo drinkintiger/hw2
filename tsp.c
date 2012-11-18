@@ -27,20 +27,12 @@ int main(int argc, char * argv[]) {
         sscanf(line, "%s", &line);
         tokenize_line(line);
     }
-        for (int i = 0; i < num_cities; ++i){
-            for (int j = 0; (&edges_list[i][j])->next != NULL; ++j){
-            //if ((&edges_list[i][j])->next != NULL){
-                printf("Origin %d %d Destination: %d Cost: %d\n", i, j, (&edges_list[i][j])->city, (&edges_list[i][j])->cost);
-            //}
-            //else printf("City: %d Cost: %d\n",(&edges_list[i][j])->city, (&edges_list[i][j])->cost);
-            }
-        }
-        for (int i = 0; i < num_cities; ++i) {
+        /*for (int i = 0; i < num_cities; ++i) {
             while(edges_list[i]->next!=NULL) {
                 printf("i: %d City: %d Cost: %d\n", i, edges_list[i]->city, edges_list[i]->cost);
                 edges_list[i] = edges_list[i]->next;
             }
-        }
+        }*/
         int stack_size = 0;
         for (int i = 0; stack_size < num_cities; i++) {
             while(edges_list[i]->next!=NULL) {
