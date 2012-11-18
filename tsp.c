@@ -11,7 +11,7 @@
 
 FILE *file;
 
-int tour_finder(void);
+int tour_finder(tour *curr_tour);
 int feasible(tour *curr_tour, struct Edge next, int city);
 int tokenize_line(char *input);
 static int num_cities = 0;
@@ -43,6 +43,7 @@ int main(int argc, char * argv[]) {
                 t->last_city = edges_list[i]->city;
                 t->path= (int *)malloc(sizeof(int)*(num_cities+1));
                 t->path[edges_list[i]->city] = edges_list[i]->city;
+                t->path[i] = i;
                 push(stack, (void *)t);
                 edges_list[i] = edges_list[i]->next;
             }
@@ -51,20 +52,15 @@ int main(int argc, char * argv[]) {
     //after list is built
     #pragma omp parallel num_threads(num_cities)
     {
-    tour_finder();
+    tour_finder((tour *)popBusyWait(stack));
     }
     
     return 0;
 }
 
-int tour_finder(void) {
+int tour_finder(tour *curr_tour) {
     int my_rank = omp_get_thread_num();
     struct Stack *my_stack = createStack();
-    tour *curr_tour = (tour*)malloc(sizeof(tour));
-    curr_tour->cost = 0;
-    curr_tour->count = 1;
-    curr_tour->path = (int *)malloc(sizeof(int)*(num_cities+1));
-    curr_tour->path[0] = 0;
     //print debugging stuff
     push(my_stack, (void *)curr_tour);
     tour *d = (int*)popBusyWait(my_stack);
