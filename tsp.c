@@ -27,11 +27,11 @@ int main(int argc, char * argv[]) {
         tokenize_line(line);
     }
         for (int i = 0; i < num_cities; ++i){
-            for (int j = 0; j <= 1; ++j){
-            if ((&edges_list[i][j])->next != NULL){
+            for (int j = 0; (&edges_list[i][j])->next != NULL; ++j){
+            //if ((&edges_list[i][j])->next != NULL){
                 printf("Origin %d %d Destination: %d Cost: %d\n", i, j, (&edges_list[i][j])->city, (&edges_list[i][j])->cost);
-            }
-            else printf("City: %d Cost: %d\n",(&edges_list[i][j])->city, (&edges_list[i][j])->cost);
+            //}
+            //else printf("City: %d Cost: %d\n",(&edges_list[i][j])->city, (&edges_list[i][j])->cost);
             }
         }
     fclose(file);
@@ -112,8 +112,7 @@ int tokenize_line(char *input) {
         int city_dest = atoi(strtok(NULL, delims));
         int cost = atoi(strtok(NULL, delims));
         printf("%d %d %d\n", city_origin, city_dest, cost);
-        struct Edge *temp = (struct Edge *)malloc(sizeof(struct Edge) + 1);
-        edges_list[city_origin] = (struct Edge *)realloc(edges_list[city_origin],sizeof(edges_list[city_origin]) + 1);
+        struct Edge *temp = (struct Edge *)malloc(sizeof(struct Edge));
         temp->city = city_dest;
         temp->cost = cost;
         temp->next = edges_list[city_origin];
