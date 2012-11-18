@@ -34,6 +34,12 @@ int main(int argc, char * argv[]) {
             //else printf("City: %d Cost: %d\n",(&edges_list[i][j])->city, (&edges_list[i][j])->cost);
             }
         }
+        for (int i = 0; i < num_cities; ++i) {
+            while(edges_list[i]->next!=NULL) {
+                printf("i: %d City: %d Cost: %d\n", i, edges_list[i]->city, edges_list[i]->cost);
+                edges_list[i]->next = edges_list[i]->next->next;
+            }
+        }
     fclose(file);
     //after list is built
     #pragma omp parallel num_threads(num_cities)
