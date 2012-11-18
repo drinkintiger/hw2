@@ -27,11 +27,11 @@ int main(int argc, char * argv[]) {
         tokenize_line(line);
     }
         for (int i = 0; i < num_cities; ++i){
-            for (int j = 0; j < 2; ++j){
-            if ((&edges_list[i][j])->city != NULL){
-                printf("%d %d asd\n", i, (&edges_list[i][j])->city);
+            for (int j = 0; j <= 1; ++j){
+            if ((&edges_list[i][j])->next != NULL){
+                printf("Origin %d %d Destination: %d Cost: %d\n", i, j, (&edges_list[i][j])->city, (&edges_list[i][j])->cost);
             }
-            else printf("BLAH\n");
+            else printf("City: %d Cost: %d\n",(&edges_list[i][j])->city, (&edges_list[i][j])->cost);
             }
         }
     fclose(file);
@@ -92,16 +92,18 @@ void add_city(tour *curr_tour, int city){
     
 }
 int tokenize_line(char *input) {
-    char *delims = "( ,\r\n)";
+    char *delims = "( ,\r\n\0)";
     
     if (atoi(input) > 0) {
         num_cities = atoi(input);
         if ( num_cities > 0) {
             edges_list = (struct Edge **)malloc(sizeof(struct Edge*) * num_cities );
-            /*for (int i = 0; i < num_cities; ++i) {
+            for (int i = 0; i < num_cities; ++i) {
                 edges_list[i] = (struct Edge *)malloc(sizeof(struct Edge));
+                edges_list[i]->city = -1;
+                edges_list[i]->cost = -1;
                 edges_list[i]->next = NULL;
-            }*/
+            }
         }
         return 1;
     }
@@ -109,7 +111,9 @@ int tokenize_line(char *input) {
         int city_origin = atoi(strtok(input,delims));
         int city_dest = atoi(strtok(NULL, delims));
         int cost = atoi(strtok(NULL, delims));
-        struct Edge *temp = (struct Edge *)malloc(sizeof(struct Edge));
+        printf("%d %d %d\n", city_origin, city_dest, cost);
+        struct Edge *temp = (struct Edge *)malloc(sizeof(struct Edge) + 1);
+        edges_list[city_origin] = (struct Edge *)realloc(edges_list[city_origin],sizeof(edges_list[city_origin]) + 1);
         temp->city = city_dest;
         temp->cost = cost;
         temp->next = edges_list[city_origin];
