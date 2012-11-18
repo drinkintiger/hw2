@@ -37,18 +37,20 @@ int main(int argc, char * argv[]) {
         }*/
         int stack_size = 0;
         for (int i = 0; stack_size < num_cities; i++) {
-            struct Edge **temp = malloc(sizeof(edges_list));
-            while(temp[i]->next!=NULL) {
+        
+            struct Edge **temp_list = (struct Edge **)malloc(sizeof(struct Edge*) * num_cities );
+            temp_list = edges_list;
+            while(temp_list[i]->next!=NULL) {
                 stack_size++;
                 tour *t = (tour *)malloc(sizeof(tour));
-                t->cost = temp[i]->cost;
+                t->cost = temp_list[i]->cost;
                 t->count++;
-                t->last_city = temp[i]->city;
+                t->last_city = temp_list[i]->city;
                 t->path= (int *)malloc(sizeof(int)*(num_cities+1));
-                t->path[temp[i]->city] = temp[i]->city;
+                t->path[temp_list[i]->city] = temp_list[i]->city;
                 t->path[i] = i;
                 push(stack, (void *)t);
-                temp[i] = temp[i]->next;
+                temp_list[i] = temp_list[i]->next;
             }
         }
     fclose(file);
