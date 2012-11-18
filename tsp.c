@@ -12,8 +12,10 @@
 FILE *file;
 
 int tour_finder(tour *curr_tour);
-int feasible(tour *curr_tour, struct Edge next, int city);
+int feasible(tour *curr_tour, struct Edge *next, int city);
 int tokenize_line(char *input);
+void add_city(tour *curr_tour, int city);
+void remove_last_city(tour *curr_tour, int last_city);
 static int num_cities = 0;
 struct Edge **edges_list;
 
@@ -35,17 +37,18 @@ int main(int argc, char * argv[]) {
         }*/
         int stack_size = 0;
         for (int i = 0; stack_size < num_cities; i++) {
-            while(edges_list[i]->next!=NULL) {
+            struct Edge **temp = malloc(sizeof(edges_list));
+            while(temp[i]->next!=NULL) {
                 stack_size++;
                 tour *t = (tour *)malloc(sizeof(tour));
-                t->cost = edges_list[i]->cost;
+                t->cost = temp[i]->cost;
                 t->count++;
-                t->last_city = edges_list[i]->city;
+                t->last_city = temp[i]->city;
                 t->path= (int *)malloc(sizeof(int)*(num_cities+1));
-                t->path[edges_list[i]->city] = edges_list[i]->city;
+                t->path[temp[i]->city] = temp[i]->city;
                 t->path[i] = i;
                 push(stack, (void *)t);
-                edges_list[i] = edges_list[i]->next;
+                temp[i] = temp[i]->next;
             }
         }
     fclose(file);
@@ -65,27 +68,28 @@ int tour_finder(tour *curr_tour) {
     push(my_stack, (void *)curr_tour);
     tour *d = (int*)popBusyWait(my_stack);
     
-    /*while(!empty(my_stack)) {
-        curr_tour = pop(my_stack);
+    while(!empty(my_stack)) {
+        curr_tour = (tour *)popBusyWait(my_stack);
         if(curr_tour->count == num_cities) {
-            if(best_tour(curr_tour)) update_best_tour(curr_tour);
+            //if(best_tour(curr_tour)) update_best_tour(curr_tour);
         }
         else {
-            for(city = num_cities-1; city >= 1; city--){
-                if(feasible(curr_tour, Edge from city, int city)){
+            for(int city = num_cities-1; city >= 1; city--){
+                if(feasible(curr_tour, edges_list[curr_tour->last_city], city)){
+                    int last_city = curr_tour->last_city;
                     add_city(curr_tour, city);
                     push(my_stack, curr_tour);
-                    remove_last_city(curr_tour);
+                    remove_last_city(curr_tour, last_city);
                 }
             }
-        free_tour(curr_tour);
+        free(curr_tour);
         }
-    }*/
+    }
     
     return 0;
 }
 
-int feasible(tour *curr_tour, struct Edge next, int city) {
+int feasible(tour *curr_tour, struct Edge *next, int city) {
     if(curr_tour->count == num_cities){
         //if there is an edge that points to 0 add 0, and the cost to get
         //to it and return true
@@ -98,7 +102,13 @@ int feasible(tour *curr_tour, struct Edge next, int city) {
 }
 void add_city(tour *curr_tour, int city){
     curr_tour->path[city] = city;
+    curr_tour->last_city = city;
     
+}
+
+void remove_last_city(tour *curr_tour, int last_city){
+    curr_tour->path[last_city] = -1;
+    curr_tour->last_city = last_city;
 }
 int tokenize_line(char *input) {
     char *delims = "( ,\r\n\0)";
