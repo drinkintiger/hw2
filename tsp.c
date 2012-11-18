@@ -37,7 +37,7 @@ int main(int argc, char * argv[]) {
         for (int i = 0; i < num_cities; ++i) {
             while(edges_list[i]->next!=NULL) {
                 printf("i: %d City: %d Cost: %d\n", i, edges_list[i]->city, edges_list[i]->cost);
-                edges_list[i]->next = edges_list[i]->next->next;
+                edges_list[i]= edges_list[i]->next;
             }
         }
     fclose(file);
