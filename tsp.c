@@ -35,7 +35,7 @@ int main(int argc, char * argv[]) {
         for (int i = 0; stack_size < num_cities; i++) {
             struct Edge **temp_list = (struct Edge **)malloc(sizeof(struct Edge*) * num_cities );
             temp_list = edges_list;
-            while(temp_list[i]->next!=NULL) {
+            while(temp_list[i]->next!=NULL && stack_size<num_cities) {
                 stack_size++;
                 tour *t = (tour *)malloc(sizeof(tour));
                 t->cost = temp_list[i]->cost;
@@ -61,7 +61,7 @@ int tour_finder(tour *curr_tour) {
     struct Stack *my_stack = createStack();
     omp_init_lock(&lock);
     push(my_stack, (void *)curr_tour);    
-    if(curr_tour->path[0]==1) return 1;
+    if(curr_tour->path[0]!=0) return 1;
     while(!empty(my_stack)) {
         curr_tour = (tour *)popBusyWait(my_stack);
             printf("Best asdas was %d\n", (curr_tour)->cost);
