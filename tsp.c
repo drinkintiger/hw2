@@ -87,13 +87,21 @@ int tour_finder(tour *curr_tour) {
 }
 
 int feasible(tour *curr_tour, struct Edge *next, int city) {
+    struct Edge *temp = (struct Edge *)malloc(sizeof(struct Edge));
+    temp = next;
     if(curr_tour->count == num_cities){
-        //if there is an edge that points to 0 add 0, and the cost to get
-        //to it and return true
-        if ( (curr_tour->count < num_cities) && ((next->next)->city == 0) ) {
-            return 1;
+        while(temp->next!=NULL){
+            if(temp->city==0){
+                curr_tour->cost+=temp->cost;
+                curr_tour->count+=1;
+                curr_tour->path[curr_tour->count] = 0;
+                return 1;
+            }
+            temp = temp->next;
         }
         //otherwise return false
+        return 0;
+        
     }
     //else if(are there duplicates)
         //if yes, return false
