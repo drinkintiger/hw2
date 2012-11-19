@@ -19,7 +19,7 @@ void remove_last_city(tour *curr_tour);
 static int num_cities = 0;
 omp_lock_t lock;
 struct Edge **edges_list;
-tour *best_tour;//  = (tour *)malloc(sizeof(tour));
+tour best_tour;//  = (tour *)malloc(sizeof(tour));
 
 
 int main(int argc, char * argv[]) {
@@ -27,8 +27,6 @@ int main(int argc, char * argv[]) {
     omp_init_lock(&lock);
     char line[64];
     file = fopen( argv[1], "rt");
-    best_tour  = (tour *)malloc(sizeof(tour));
-    best_tour->cost = 2232323;
     while(fgets(line, 64, file) != NULL) {
         sscanf(line, "%s", &line);
         tokenize_line(line);
@@ -50,7 +48,7 @@ int main(int argc, char * argv[]) {
             }
         }
     fclose(file);
-    //after list is built
+    
     #pragma omp parallel num_threads(num_cities)
     {
     tour_finder((tour *)popBusyWait(stack));
@@ -61,15 +59,14 @@ int main(int argc, char * argv[]) {
 
 int tour_finder(tour *curr_tour) {
     struct Stack *my_stack = createStack();
-    push(my_stack, (void *)curr_tour);
-    
+    push(my_stack, (void *)curr_tour);    
+
     while(!empty(my_stack)) {
         curr_tour = (tour *)popBusyWait(my_stack);
         if(curr_tour->count == num_cities) {
             omp_set_lock(&lock);
-            if(curr_tour->cost<best_tour->cost)
-                best_tour = curr_tour;
-            //if(best_tour(curr_tour)) update_best_tour(curr_tour);
+            if(curr_tour->cost < (&best_tour)->cost)
+                best_tour = *curr_tour;
             omp_unset_lock(&lock);
         }
         else {
@@ -99,13 +96,27 @@ int feasible(tour *curr_tour, struct Edge *next, int city) {
     return 0;
 }
 void add_city(tour *curr_tour, int city){
+    struct Edge **temp_list = (struct Edge **)malloc(sizeof(struct Edge*) * num_cities );
+    temp_list = edges_list;
+    while(temp_list[curr_tour->path[curr_tour->count-1]]->city!=city){//Iterates through the edges_list looking for a match on the 
+                                                                        //passed city, there will be a match sinice at this point it's feasible
+        temp_list[curr_tour->path[curr_tour->count-1]] = temp_list[curr_tour->path[curr_tour->count-1]]->next;
+    }
+    curr_tour->cost += temp_list[curr_tour->path[curr_tour->count-1]]->cost;
     curr_tour->path[curr_tour->count] = city;
+    if(edges_list[curr_tour->count-1]->city == city)
     curr_tour->count += 1;
     
 }
 
 void remove_last_city(tour *curr_tour){
+    struct Edge **temp_list = (struct Edge **)malloc(sizeof(struct Edge*) * num_cities );
     curr_tour->count -= 1;
+    while(temp_list[curr_tour->path[curr_tour->count-1]]->city!=curr_tour->count){//looks at the city before the added one, and looks for
+                                                                                    //the city that was added
+        temp_list[curr_tour->path[curr_tour->count-1]] = temp_list[curr_tour->path[curr_tour->count-1]]->next;
+    }
+    curr_tour-cost -= temp_list[curr_tour->path[curr_tour->count-1]]->cost;
     curr_tour->path[curr_tour->count] = -1;
 }
 int tokenize_line(char *input) {
