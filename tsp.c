@@ -17,11 +17,13 @@ int tokenize_line(char *input);
 void add_city(tour *curr_tour, int city);
 void remove_last_city(tour *curr_tour, int last_city);
 static int num_cities = 0;
+tour best_tour;
+omp_lock_t lock;
 struct Edge **edges_list;
 
 int main(int argc, char * argv[]) {
-    tour best_tour;
     struct Stack *stack = createStack();
+    omp_init_lock(&lock);
     char line[64];
     file = fopen( argv[1], "rt");
     
@@ -29,15 +31,8 @@ int main(int argc, char * argv[]) {
         sscanf(line, "%s", &line);
         tokenize_line(line);
     }
-        /*for (int i = 0; i < num_cities; ++i) {
-            while(edges_list[i]->next!=NULL) {
-                printf("i: %d City: %d Cost: %d\n", i, edges_list[i]->city, edges_list[i]->cost);
-                edges_list[i] = edges_list[i]->next;
-            }
-        }*/
         int stack_size = 0;
         for (int i = 0; stack_size < num_cities; i++) {
-        
             struct Edge **temp_list = (struct Edge **)malloc(sizeof(struct Edge*) * num_cities );
             temp_list = edges_list;
             while(temp_list[i]->next!=NULL) {
@@ -73,7 +68,9 @@ int tour_finder(tour *curr_tour) {
     while(!empty(my_stack)) {
         curr_tour = (tour *)popBusyWait(my_stack);
         if(curr_tour->count == num_cities) {
+            omp_set_lock(&lock);
             //if(best_tour(curr_tour)) update_best_tour(curr_tour);
+            omp_unset_lock(&lock);
         }
         else {
             for(int city = num_cities-1; city >= 1; city--){
