@@ -61,7 +61,7 @@ int main(int argc, char * argv[]) {
 int tour_finder(tour *curr_tour) {
     struct Stack *my_stack = createStack();
     push(my_stack, (void *)curr_tour);    
-
+    if(curr_tour->path[0]==1) return 1;
     while(!empty(my_stack)) {
         curr_tour = (tour *)popBusyWait(my_stack);
         if(curr_tour->count == num_cities) {
