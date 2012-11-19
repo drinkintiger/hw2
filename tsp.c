@@ -105,14 +105,12 @@ void add_city(tour *curr_tour, int city){
     struct Edge **temp_list = (struct Edge **)malloc(sizeof(struct Edge*) * num_cities );
     temp_list = edges_list;
     //Iterates through the edges_list looking for a match on the passed city, there will be a match sinice at this point it's feasible
-    while(temp_list[curr_tour->path[curr_tour->count-1]]->city!=city){
+    while(temp_list[curr_tour->path[curr_tour->count-1]]->city != city){
         temp_list[curr_tour->path[curr_tour->count-1]] = temp_list[curr_tour->path[curr_tour->count-1]]->next;
     }
     curr_tour->cost += temp_list[curr_tour->path[curr_tour->count-1]]->cost;
     curr_tour->path[curr_tour->count] = city;
-    if(edges_list[curr_tour->count-1]->city == city) {
-        curr_tour->count += 1;
-    }
+    curr_tour->count += 1;
 }
 
 void remove_last_city(tour *curr_tour){
