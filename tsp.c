@@ -19,7 +19,7 @@ void remove_last_city(tour *curr_tour);
 static int num_cities = 0;
 omp_lock_t lock;
 struct Edge **edges_list;
-tour *best_tour;//  = (tour *)malloc(sizeof(tour));
+tour best_tour;//  = (tour *)malloc(sizeof(tour));
 
 
 int main(int argc, char * argv[]) {
@@ -27,8 +27,8 @@ int main(int argc, char * argv[]) {
     omp_init_lock(&lock);
     char line[64];
     file = fopen( argv[1], "rt");
-    best_tour  = (tour *)malloc(sizeof(tour));
-    best_tour->cost = 2232323;
+    //best_tour  = (tour *)malloc(sizeof(tour));
+    (&best_tour)->cost = 2232323;
     while(fgets(line, 64, file) != NULL) {
         sscanf(line, "%s", &line);
         tokenize_line(line);
@@ -67,8 +67,8 @@ int tour_finder(tour *curr_tour) {
         curr_tour = (tour *)popBusyWait(my_stack);
         if(curr_tour->count == num_cities) {
             omp_set_lock(&lock);
-            if(curr_tour->cost<best_tour->cost)
-                best_tour = curr_tour;
+            if(curr_tour->cost < (&best_tour)->cost)
+                best_tour = *curr_tour;
             //if(best_tour(curr_tour)) update_best_tour(curr_tour);
             omp_unset_lock(&lock);
         }
@@ -91,9 +91,12 @@ int feasible(tour *curr_tour, struct Edge *next, int city) {
     if(curr_tour->count == num_cities){
         //if there is an edge that points to 0 add 0, and the cost to get
         //to it and return true
+        if ( (curr_tour->count < num_cities) && ((next->next)->city == 0) ) {
+            return 1;
+        }
         //otherwise return false
     }
-    //else if(are there duplicates)
+    else if(are there duplicates)
         //if yes, return false
     //else return true
     return 0;
