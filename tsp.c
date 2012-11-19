@@ -53,8 +53,8 @@ int main(int argc, char * argv[]) {
     #pragma omp parallel num_threads(num_cities)
     {
     tour_finder((tour *)popBusyWait(stack));
+    printf("Best tour was %d\n", (&best_tour)->cost);
     }
-    
     return 0;
 }
 
@@ -113,9 +113,9 @@ int feasible(tour *curr_tour, struct Edge *next, int city) {
                 return 1;
             temp = temp->next;
         }
+        return 0;
     }
-    
-    return 1;
+    return 0;
 }
 
 void add_city(tour *curr_tour, int city){
