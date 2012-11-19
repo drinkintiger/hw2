@@ -12,7 +12,6 @@ typedef struct {
     int *path;
     int cost;
     int count;
-    int last_city;
 } tour;
 
 struct Edge {
