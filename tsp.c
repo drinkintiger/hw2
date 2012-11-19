@@ -101,12 +101,21 @@ int feasible(tour *curr_tour, struct Edge *next, int city) {
         }
         //otherwise return false
         return 0;
-        
     }
-    //else if(are there duplicates)
-        //if yes, return false
-    //else return true
-    return 0;
+    else{
+        for(int i = 0; i < curr_tour->count; i++){
+            if(curr_tour->path[i]==city)
+                return 0;
+        }
+        
+        while(temp->next!=NULL){
+            if(temp->city==city)
+                return 1;
+            temp = temp->next;
+        }
+    }
+    
+    return 1;
 }
 
 void add_city(tour *curr_tour, int city){
