@@ -52,9 +52,9 @@ int main(int argc, char * argv[]) {
     
     #pragma omp parallel num_threads(num_cities)
     {
-    tour_finder((tour *)popBusyWait(stack));
-    printf("Best tour was %d\n", (&best_tour)->cost);
+        tour_finder((tour *)popBusyWait(stack));
     }
+    printf("Best tour was %d\n", (&best_tour)->cost);
     return 0;
 }
 
@@ -64,9 +64,12 @@ int tour_finder(tour *curr_tour) {
     if(curr_tour->path[0]==1) return 1;
     while(!empty(my_stack)) {
         curr_tour = (tour *)popBusyWait(my_stack);
+            printf("Best asdas was %d\n", (curr_tour)->cost);
         if(curr_tour->count == num_cities) {
             omp_set_lock(&lock);
             if(curr_tour->cost < (&best_tour)->cost) {
+                (&best_tour)->cost = curr_tour->cost;
+                printf("Best tour was %d\n", (curr_tour)->cost);
                 best_tour = *curr_tour;
             }
             omp_unset_lock(&lock);
