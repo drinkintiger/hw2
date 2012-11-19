@@ -95,7 +95,7 @@ int feasible(tour *curr_tour, struct Edge *next, int city) {
         }
         //otherwise return false
     }
-    else if(are there duplicates)
+    //else if(are there duplicates)
         //if yes, return false
     //else return true
     return 0;
@@ -111,6 +111,7 @@ void add_city(tour *curr_tour, int city){
     curr_tour->cost += temp_list[curr_tour->path[curr_tour->count-1]]->cost;
     curr_tour->path[curr_tour->count] = city;
     curr_tour->count += 1;
+    free(temp_list);
 }
 
 void remove_last_city(tour *curr_tour){
@@ -120,8 +121,9 @@ void remove_last_city(tour *curr_tour){
     while(temp_list[curr_tour->path[curr_tour->count-1]]->city!=curr_tour->count){
         temp_list[curr_tour->path[curr_tour->count-1]] = temp_list[curr_tour->path[curr_tour->count-1]]->next;
     }
-    curr_tour-cost -= temp_list[curr_tour->path[curr_tour->count-1]]->cost;
+    curr_tour->cost -= temp_list[curr_tour->path[curr_tour->count-1]]->cost;
     curr_tour->path[curr_tour->count] = -1;
+    free(temp_list);
 }
 
 int tokenize_line(char *input) {
