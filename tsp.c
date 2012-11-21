@@ -65,7 +65,7 @@ int tour_finder(tour *curr_tour) {
     while(!empty(my_stack)) {
         curr_tour = (tour *)popBusyWait(my_stack);
             printf("%d Best asdas was %d\n", omp_get_thread_num(), (curr_tour)->cost);
-        if(curr_tour->count == num_cities) {
+        if(curr_tour->count == num_cities+1) {
             omp_set_lock(&lock);
             if(curr_tour->cost < (&best_tour)->cost) {
                 (&best_tour)->cost = curr_tour->cost;
