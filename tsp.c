@@ -24,7 +24,6 @@ tour best_tour;
 
 int main(int argc, char * argv[]) {
     struct Stack *stack = createStack();
-    omp_init_lock(&lock);
     char line[64];
     file = fopen( argv[1], "rt");
     (&best_tour)->cost = 2232323;
@@ -60,6 +59,7 @@ int main(int argc, char * argv[]) {
 
 int tour_finder(tour *curr_tour) {
     struct Stack *my_stack = createStack();
+    omp_init_lock(&lock);
     push(my_stack, (void *)curr_tour);    
     if(curr_tour->path[0]!=0) return 1;
     while(!empty(my_stack)) {
