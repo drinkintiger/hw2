@@ -64,7 +64,7 @@ int tour_finder(tour *curr_tour) {
     if(curr_tour->path[0]!=0) return 1;
     while(!empty(my_stack)) {
         curr_tour = (tour *)popBusyWait(my_stack);
-            printf("Best asdas was %d\n", (curr_tour)->cost);
+            printf("%d Best asdas was %d\n", omp_get_thread_num(), (curr_tour)->cost);
         if(curr_tour->count == num_cities) {
             omp_set_lock(&lock);
             if(curr_tour->cost < (&best_tour)->cost) {
@@ -136,6 +136,7 @@ void add_city(tour *curr_tour, int city){
 
 void remove_last_city(tour *curr_tour){
     struct Edge **temp_list = (struct Edge **)malloc(sizeof(struct Edge*) * num_cities );
+    temp_list = edges_list;
     curr_tour->count -= 1;
     //looks at the city before the added one, and looks for the city that was added
     while(temp_list[curr_tour->path[curr_tour->count-1]]->city!=curr_tour->count){
