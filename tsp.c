@@ -26,7 +26,7 @@ int main(int argc, char * argv[]) {
     struct Stack *stack = createStack();
     char line[64];
     file = fopen( argv[1], "rt");
-    (&best_tour)->cost = 2232323;
+    best_tour.cost = 2232323;
     while(fgets(line, 64, file) != NULL) {
         sscanf(line, "%s", &line);
         tokenize_line(line);
@@ -53,7 +53,10 @@ int main(int argc, char * argv[]) {
     {
         tour_finder((tour *)popBusyWait(stack));
     }
-    printf("Best tour was %d\n", (&best_tour)->cost);
+    for (int i=0; i <= best_tour.count; ++i){
+        printf("The path is: %d\n", best_tour.path[i]);
+    }
+    printf("Best tour was %d\n", best_tour.cost);
     return 0;
 }
 
@@ -64,25 +67,25 @@ int tour_finder(tour *curr_tour) {
     if(curr_tour->path[0]!=0) return 1;
     while(!empty(my_stack)) {
         curr_tour = (tour *)popBusyWait(my_stack);
-            printf("%d Best asdas was %d\n", omp_get_thread_num(), (curr_tour)->cost);
-        if(curr_tour->count == num_cities+1) {
+
+        if(curr_tour->count == num_cities) {
             omp_set_lock(&lock);
-            if(curr_tour->cost < (&best_tour)->cost) {
-                (&best_tour)->cost = curr_tour->cost;
-                printf("Best tour was %d\n", (curr_tour)->cost);
-                best_tour = *curr_tour;
+            printf("THIS IS THE TOUR %d\n", curr_tour->cost);
+            if( (curr_tour->cost) < (best_tour.cost) ) {
+                best_tour.cost = curr_tour->cost;
+                best_tour.count = curr_tour->count;
+                best_tour.path = curr_tour->path;
+                printf("THIS IS THE BEST TOUR %d\n", best_tour.cost);
             }
             omp_unset_lock(&lock);
-        }
+            }
         else {
             for(int city = num_cities-1; city >= 1; city--){
                 if(feasible(curr_tour, edges_list[curr_tour->path[curr_tour->count-1]], city)){
                     add_city(curr_tour, city);
                     push(my_stack, curr_tour);
-                    remove_last_city(curr_tour);
                 }
             }
-        free(curr_tour);
         }
     }
     
@@ -122,19 +125,19 @@ int feasible(tour *curr_tour, struct Edge *next, int city) {
 }
 
 void add_city(tour *curr_tour, int city){
-    struct Edge **temp_list = (struct Edge **)malloc(sizeof(struct Edge*) * num_cities );
-    temp_list = edges_list;
-    //Iterates through the edges_list looking for a match on the passed city, there will be a match sinice at this point it's feasible
-    while(temp_list[curr_tour->path[curr_tour->count-1]]->city != city){
-        temp_list[curr_tour->path[curr_tour->count-1]] = temp_list[curr_tour->path[curr_tour->count-1]]->next;
+    //struct Edge **temp_list = (struct Edge **)malloc(sizeof(struct Edge*) * num_cities );
+    struct Edge *temp = (struct Edge *)malloc(sizeof(struct Edge));
+    temp = edges_list[curr_tour->path[curr_tour->count-1]];
+    //Iterates through the edges_list looking for a match on the passed city, there will be a match since at this point it's feasible
+    while(temp->city != city){
+        temp = temp->next;
     }
-    curr_tour->cost += temp_list[curr_tour->path[curr_tour->count-1]]->cost;
+    curr_tour->cost += temp->cost;
     curr_tour->path[curr_tour->count] = city;
     curr_tour->count += 1;
-    free(temp_list);
 }
 
-void remove_last_city(tour *curr_tour){
+/*void remove_last_city(tour *curr_tour){
     struct Edge **temp_list = (struct Edge **)malloc(sizeof(struct Edge*) * num_cities );
     temp_list = edges_list;
     curr_tour->count -= 1;
@@ -144,8 +147,7 @@ void remove_last_city(tour *curr_tour){
     }
     curr_tour->cost -= temp_list[curr_tour->path[curr_tour->count-1]]->cost;
     curr_tour->path[curr_tour->count] = -1;
-    free(temp_list);
-}
+}*/
 
 int tokenize_line(char *input) {
     char *delims = "( ,\r\n\0)";
