@@ -11,19 +11,21 @@
 
 FILE *file;
 
-int tour_finder(tour curr_tour);
-int feasible(tour curr_tour, struct Edge *next, int city);
+
+int tour_finder(tour *curr_tour);
+int feasible(tour *curr_tour,  Edge *next);
 int tokenize_line(char *input);
-void add_city(tour curr_tour, int city);
+tour *add_city(tour *curr_tour, Edge *next);
 void remove_last_city(tour *curr_tour);
 static int num_cities = 0;
 omp_lock_t lock;
-struct Edge **edges_list;
+Edge **edges_list;
 tour best_tour;
-
+int thds = 0;
 
 int main(int argc, char * argv[]) {
     struct Stack *stack = createStack();
+    omp_init_lock(&lock);
     char line[64];
     file = fopen( argv[1], "rt");
     best_tour.cost = 2232323;
@@ -31,124 +33,92 @@ int main(int argc, char * argv[]) {
         sscanf(line, "%s", &line);
         tokenize_line(line);
     }
-    
-    fclose(file);
-        int stack_size = 0;
-        for (int i = 0; stack_size < num_cities; i++) {
-            struct Edge **temp_list = (struct Edge **)malloc(sizeof(struct Edge*) * num_cities );
-            temp_list = edges_list;
-            while(temp_list[i]->next!=NULL && stack_size<num_cities) {
-                stack_size++;
+
+            
+            Edge *ptr = edges_list[0];
+            while(ptr != NULL) {
+                thds++;
                 tour *t = (tour *)malloc(sizeof(tour));
-                t->cost = temp_list[i]->cost;
+                t->cost = ptr->cost;
                 t->count = 2;
                 t->path= (int *)malloc(sizeof(int)*(num_cities+1));
-                t->path[0] = i;
-                t->path[1] = temp_list[i]->city;
+                t->path[0] = 0;
+                t->path[1] = ptr->city;
                 push(stack, (void *)t);
-                temp_list[i] = temp_list[i]->next;
+                ptr = ptr->next;
             }
-        }
+
+    fclose(file);
     
-    #pragma omp parallel num_threads(num_cities)
+    #pragma omp parallel num_threads(thds) default(shared)
     {
-        tour_finder(*(tour *)popBusyWait(stack));
+        tour_finder( (tour *)popBusyWait(stack) );
     }
-    for (int i=0; i <= best_tour.count; ++i){
-        printf("The path is: %d\n", best_tour.path[i]);
+    
+    for (int i = 0; i < best_tour.count; i++) {
+        printf("%d ", best_tour.path[i]);
     }
-    printf("Best tour was %d\n", best_tour.cost);
+    printf("\nBest tour cost was %d\n", best_tour.cost);
     return 0;
 }
 
 int tour_finder(tour curr_tour) {
     struct Stack *my_stack = createStack();
-    omp_init_lock(&lock);
-    push(my_stack, (void *)(&curr_tour));
-    if(curr_tour.path[0]!=0) return 1;
+    push(my_stack, (void *)curr_tour);
     while(!empty(my_stack)) {
-        curr_tour = *(tour *)popBusyWait(my_stack);
-
-        if(curr_tour.count == num_cities) {
+        curr_tour = (tour *)popBusyWait(my_stack);
+        if(curr_tour->count == num_cities + 1) {
             omp_set_lock(&lock);
-            printf("THIS IS THE TOUR %d\n", curr_tour.cost);
-            if( (curr_tour.cost) <= (best_tour.cost) ) {
-                best_tour.cost = curr_tour.cost;
-                best_tour.count = curr_tour.count;
-                best_tour.path = curr_tour.path;
-                printf("THIS IS THE BEST TOUR %d\n", best_tour.cost);
+            if( (curr_tour->cost) < (best_tour.cost) ) {
+                best_tour.cost = curr_tour->cost;
+                best_tour.count = curr_tour->count;
+                best_tour.path = curr_tour->path;
             }
             omp_unset_lock(&lock);
             }
         else {
-            for(int city = num_cities-1; city >= 1; city--){
-                if(feasible(curr_tour, edges_list[curr_tour.path[curr_tour.count-1]], city)){
-                    add_city(curr_tour, city);
-                    push(my_stack, (void *)(&curr_tour));
+            int temp = curr_tour->path[curr_tour->count-1];
+            Edge *ptr = edges_list[temp];
+            while(ptr != NULL) {
+                if(feasible(curr_tour, ptr)) {
+                    push(my_stack, add_city(curr_tour, ptr));
                 }
+                ptr = ptr->next;
             }
         }
+    }
+    return 0;
+}
+
+int feasible(tour *curr_tour, Edge *next) {
+    if ((curr_tour->cost + next->cost) >= best_tour.cost){
+        return 0;
     }
     
-    return 0;
-}
-
-int feasible(tour curr_tour, struct Edge *next, int city) {
-    struct Edge *temp = (struct Edge *)malloc(sizeof(struct Edge));
-    temp = next;
-    if(curr_tour.count == num_cities){
-        while(temp->next!=NULL){
-            if(temp->city==0){
-                curr_tour.cost+=temp->cost;
-                curr_tour.count+=1;
-                curr_tour.path[curr_tour.count] = 0;
-                return 1;
-            }
-            temp = temp->next;
+    if(curr_tour->count == num_cities){
+        if(next->city == 0){
+            return 1;
         }
         //otherwise return false
-        return 0;
+        else return 0;
     }
     else{
-        for(int i = 0; i < curr_tour.count; i++){
-            if(curr_tour.path[i]==city)
+        for(int i = 0; i < curr_tour->count; i++){
+            if(curr_tour->path[i] == next->city)
                 return 0;
         }
-        
-        while(temp->next!=NULL){
-            if(temp->city==city)
-                return 1;
-            temp = temp->next;
-        }
-        return 0;
     }
-    return 0;
+    return 1;
 }
-
-void add_city(tour curr_tour, int city){
-    //struct Edge **temp_list = (struct Edge **)malloc(sizeof(struct Edge*) * num_cities );
-    struct Edge *temp = (struct Edge *)malloc(sizeof(struct Edge));
-    temp = edges_list[curr_tour.path[curr_tour.count-1]];
-    //Iterates through the edges_list looking for a match on the passed city, there will be a match since at this point it's feasible
-    while(temp->city != city){
-        temp = temp->next;
-    }
-    curr_tour.cost += temp->cost;
-    curr_tour.path[curr_tour.count] = city;
-    curr_tour.count += 1;
+tour *add_city(tour *curr_tour, Edge *next){
+    tour *retval = malloc(sizeof(tour));
+    retval->path = malloc(sizeof(int) * (num_cities + 1));
+    retval->cost = curr_tour->cost + next->cost;
+    retval->path = memcpy(retval->path, curr_tour->path,curr_tour->count * sizeof(int));
+    retval->count = curr_tour->count + 1;
+    retval->path[retval->count - 1] = next->city;
+    return retval;
 }
-
-/*void remove_last_city(tour *curr_tour){
-    struct Edge **temp_list = (struct Edge **)malloc(sizeof(struct Edge*) * num_cities );
-    temp_list = edges_list;
-    curr_tour->count -= 1;
-    //looks at the city before the added one, and looks for the city that was added
-    while(temp_list[curr_tour->path[curr_tour->count-1]]->city!=curr_tour->count){
-        temp_list[curr_tour->path[curr_tour->count-1]] = temp_list[curr_tour->path[curr_tour->count-1]]->next;
-    }
-    curr_tour->cost -= temp_list[curr_tour->path[curr_tour->count-1]]->cost;
-    curr_tour->path[curr_tour->count] = -1;
-}*/
 
 int tokenize_line(char *input) {
     char *delims = "( ,\r\n\0)";
@@ -156,12 +126,9 @@ int tokenize_line(char *input) {
     if (atoi(input) > 0) {
         num_cities = atoi(input);
         if ( num_cities > 0) {
-            edges_list = (struct Edge **)malloc(sizeof(struct Edge*) * num_cities );
+            edges_list = ( Edge **)malloc(sizeof( Edge*) * num_cities );
             for (int i = 0; i < num_cities; ++i) {
-                edges_list[i] = (struct Edge *)malloc(sizeof(struct Edge));
-                edges_list[i]->city = -1;
-                edges_list[i]->cost = -1;
-                edges_list[i]->next = NULL;
+                edges_list[i] = NULL;
             }
         }
         return 1;
@@ -171,7 +138,7 @@ int tokenize_line(char *input) {
         int city_dest = atoi(strtok(NULL, delims));
         int cost = atoi(strtok(NULL, delims));
         printf("%d %d %d\n", city_origin, city_dest, cost);
-        struct Edge *temp = (struct Edge *)malloc(sizeof(struct Edge));
+         Edge *temp = ( Edge *)malloc(sizeof( Edge));
         temp->city = city_dest;
         temp->cost = cost;
         temp->next = edges_list[city_origin];
